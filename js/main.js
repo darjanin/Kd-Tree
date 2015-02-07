@@ -55,10 +55,13 @@ function showPoints() {
 }
 
 function addPoint(point) {
-    points.push(point);
-    // showPoints();
-    tree.init(points);
-    redraw();
+    if (points.length === 0 || point.x !== points[points.length-1].x || point.y !== points[points.length-1].y) {
+
+        points.push(point);
+        tree.init(points);
+        redraw();
+    } else {
+    }
 }
 
 function selectPoint(point) {
@@ -87,7 +90,7 @@ function redraw() {
 function drawDividingLines(t, viewport) {
     var XMIN = 0, YMIN = 1, XMAX = 2, YMAX = 3;
 
-    if (t.point !== null) return;
+    if (t === null || t.point !== null) return;
 
     var viewportLocal = viewport.slice();
 
