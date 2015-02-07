@@ -15,7 +15,14 @@ function KDTree() {
 }
 
 KDTree.prototype.init = function(points){
-    this.root = this.constructTree(points, 0, 2);
+    // try {
+    var self = this;
+    // setInterval(function(points) {
+        self.root = self.constructTree(points, 0, 2);
+
+    // } catch (exception) {
+        // alert('Please click slower! Your JS engine is slow.');
+    // }
 };
 
 KDTree.prototype.constructTree = function(points, dim, k) {

@@ -25,15 +25,23 @@ var actions = function() {
     };
 }
 
-function mouseControl(event) {
-    var x = event.x - canvas.offsetLeft;
-    var y = event.y - canvas.offsetTop;
+function mouseControl(ev) {
+    var x, y;
 
-    if (event.type == 'mouseup' && !event.shiftKey && event.button === 0) {
+    // Get the mouse position relative to the <canvas> element
+    if (ev.layerX || ev.layerX == 0) {
+        x = ev.layerX;
+        y = ev.layerY;
+    } else if (ev.offsetX || ev.offsetX == 0) {
+        x = ev.offsetX;
+        y = ev.offsetY;
+    }
+
+    if (ev.type == 'mouseup' && !ev.shiftKey && ev.button === 0) {
         addPoint(new Point(x, y));
     }
 
-    if (event.type = 'mouseup' && event.button == 2) {
+    if (ev.type = 'mouseup' && ev.button == 2) {
         selectPoint(new Point(x, y));
     }
 }
@@ -77,37 +85,38 @@ function redraw() {
 }
 
 function drawDividingLines(t, viewport) {
+    var XMIN = 0, YMIN = 1, XMAX = 2, YMAX = 3;
 
     if (t.point !== null) return;
 
     var viewportLocal = viewport.slice();
 
     if (t.dim % 2 == 0) {
-        viewportLocal[0] = t.split;
-        viewportLocal[2] = t.split;
-    } else { // xMax is split
-        viewportLocal[1] = t.split;
-        viewportLocal[3] = t.split;
+        viewportLocal[XMIN] = t.split;
+        viewportLocal[XMAX] = t.split;
+    } else {
+        viewportLocal[YMIN] = t.split;
+        viewportLocal[YMAX] = t.split;
     }
-    console.log(viewportLocal);
+
     var color = t.dim % 2 == 0 ? '#de5555' : '#55de55';
     vincent.line(
-        new Point(viewportLocal[0], viewportLocal[1]),
-        new Point(viewportLocal[2], viewportLocal[3]),
+        new Point(viewportLocal[XMIN], viewportLocal[YMIN]),
+        new Point(viewportLocal[XMAX], viewportLocal[YMAX]),
         color
     );
 
     var viewportLeft = viewport.slice();
     var viewportRight = viewport.slice();
-    // console.log(t.dim);
+
     if (t.dim % 2 === 0) {
-        viewportLeft[2] = t.split;
-        viewportRight[0] = t.split;
+        viewportLeft[XMAX] = t.split;
+        viewportRight[XMIN] = t.split;
     } else {
-        viewportLeft[3] = t.split;
-        viewportRight[1] = t.split;
+        viewportLeft[YMAX] = t.split;
+        viewportRight[YMIN] = t.split;
     }
 
-    if (t.left !== null) drawDividingLines(t.left, viewportLeft);
-    if (t.right !== null) drawDividingLines(t.right, viewportRight);
+    drawDividingLines(t.left, viewportLeft);
+    drawDividingLines(t.right, viewportRight);
 }
