@@ -52,6 +52,13 @@ Vincent.prototype.line = function(from, to, color) {
     this.context.stroke();
 };
 
+Vincent.prototype.rect = function(from, to, color) {
+    color = typeof color !== 'undefined' ? color : this.lineColor;
+
+    this.context.strokeStyle = color;
+    this.context.strokeRect(from.x, from.y, to.x - from.x, to.y - from.y);
+}
+
 Vincent.prototype.point = function(point, color) {
     color = typeof color !== 'undefined' ? color : this.pointColor;
 

@@ -2,6 +2,7 @@ var canvas;
 var vincent;
 var points;
 var tree;
+var rectangle = {xMin: 0, yMin: 0, xMax: 0, yMax: 0};
 // on document ready load
 $(function() {
     canvas = document.getElementById('canvas');
@@ -44,6 +45,26 @@ function mouseControl(ev) {
     if (ev.type = 'mouseup' && ev.button == 2) {
         selectPoint(new Point(x, y));
     }
+
+    if (ev.type == 'mousedown' && ev.button == 1) {
+        rectangle.xMin = x;
+        rectangle.yMin = y;
+    }
+
+    if (ev.type == 'mousemove' && ev.button == 1) {
+        rectangle.xMax = x;
+        rectangle.yMax = y;
+
+        redraw();
+    }
+
+    if (ev.type == 'mouseup' && ev.button == 1) {
+        rectangle.xMax = x;
+        rectangle.yMax = y;
+
+        selectInRectangle();
+
+    }
 }
 
 function showPoints() {
@@ -62,6 +83,31 @@ function addPoint(point) {
         redraw();
     } else {
     }
+
+    resetRectangle();
+}
+
+function swap(a, b) {
+    return [b, a];
+}
+
+function selectInRectangle() {
+    if (rectangle.xMin > rectangle.xMax) {
+        var swapped = swap(rectangle.xMin, rectangle.xMax);
+        rectangle.xMin = swapped[0];
+        rectangle.xMax = swapped[1];
+    }
+    if (rectangle.yMin > rectangle.yMax) {
+        var swapped = swap(rectangle.yMin, rectangle.yMax);
+        rectangle.yMin = swapped[0];
+        rectangle.yMax = swapped[1];
+    }
+
+    tree.insideRect(rectangle);
+
+    redraw();
+
+    resetRectangle();
 }
 
 function selectPoint(point) {
@@ -72,6 +118,8 @@ function selectPoint(point) {
     // tree.findNeighbours(point, k);
 
     redraw();
+
+    resetRectangle();
 }
 
 function redraw() {
@@ -83,8 +131,27 @@ function redraw() {
         vincent.point(point, color);
     });
 
+    if (rectangle.xMin !== 0 && rectangle.yMin !== 0 && rectangle.xMax !== 0 && rectangle.yMax !== 0) {
+        vincent.rect(
+            new Point(rectangle.xMin, rectangle.yMin),
+            new Point(rectangle.xMax, rectangle.yMax),
+            '#da7700'
+        )
+    }
+
     var viewport = [0, 0, canvas.width, canvas.height];
     drawDividingLines(this.tree.root, viewport);
+
+    deselectAllPoints();
+
+}
+
+function resetRectangle() {
+    rectangle = {xMin: 0, yMin: 0, xMax: 0, yMax: 0};
+}
+
+function deselectAllPoints() {
+    points.forEach(function(point) { point.selected = false; });
 }
 
 function drawDividingLines(t, viewport) {

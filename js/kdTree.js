@@ -108,3 +108,29 @@ KDTree.prototype.findNeighbours = function (point, k) {
 
     return neigboursCount;
 }
+
+
+KDTree.prototype.insideRect = function(rectangle) {
+    this.inside(this.root, rectangle);
+}
+
+KDTree.prototype.inside = function(node, rectangle) {
+    if (node === null) return;
+    if (node.point !== null) {
+        if ((rectangle.xMin < node.point.x) &&
+            (rectangle.xMax > node.point.x) &&
+            (rectangle.yMin < node.point.y) &&
+            (rectangle.yMax > node.point.y)
+        ) {
+            node.point.selected = true;
+        }
+    } else {
+        if (node.dim % 2 == 0) {
+            if (rectangle.xMin < node.split) this.inside(node.left, rectangle);
+            if (rectangle.xMax > node.split) this.inside(node.right, rectangle);
+        } else {
+            if (rectangle.yMin < node.split) this.inside(node.left, rectangle);
+            if (rectangle.yMax > node.split) this.inside(node.right, rectangle);
+        }
+    }
+}
