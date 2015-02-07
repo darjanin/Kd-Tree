@@ -72,50 +72,42 @@ function redraw() {
         vincent.point(point, color);
     });
 
-    drawDividingLines(this.tree.root, '');
+    var viewport = [0, 0, canvas.width, canvas.height];
+    drawDividingLines(this.tree.root, viewport);
 }
 
-function drawDividingLines(t, direction) {
-    // console.log('drawDividingLines');
-    console.log(t.parent);
-    var yMin, yMax, xMin, xMax;
-    if (t.parent === null) {
-            xMin = 0;
-            xMax = canvas.width;
-            yMin = t.split;
-            yMax = t.split;
-            // console.log(xMin + 'x' + yMin);
-            // console.log(xMax + 'x' + yMax);
-            // vincent.line(new Point(xMin, yMin), new Point(xMax, yMax));
-    } else {
-        console.log('Parent is diff from null');
-        if (t.dim % 2 == 0) { // yMin is split
-            if (direction === 'right') {
-                xMin = t.parent.split;
-                xMax = canvas.width;
-            } else if (direction === 'left') {
-                yMin = canvas.width;
-                yMax = t.parent.split;
-            }
-            yMin = t.split;
-            yMax = t.split;
-            // vincent.line(new Point(xMin, yMin), new Point(xMax, yMax));
-        } else { // xMax is split
-            xMin = t.split;
-            xMax = t.split;
-            if (direction === 'right') {
-                yMin = t.parent.split;
-                yMax = canvas.height;
-            } else if (direction === 'left') {
-                yMin = 0;
-                yMax = t.parent.split;
-            }
+function drawDividingLines(t, viewport) {
 
-        }
+    if (t.point !== null) return;
+
+    var viewportLocal = viewport.slice();
+
+    if (t.dim % 2 == 0) {
+        viewportLocal[0] = t.split;
+        viewportLocal[2] = t.split;
+    } else { // xMax is split
+        viewportLocal[1] = t.split;
+        viewportLocal[3] = t.split;
     }
+    console.log(viewportLocal);
     var color = t.dim % 2 == 0 ? '#de5555' : '#55de55';
-    vincent.line(new Point(xMin, yMin), new Point(xMax, yMax), color);
+    vincent.line(
+        new Point(viewportLocal[0], viewportLocal[1]),
+        new Point(viewportLocal[2], viewportLocal[3]),
+        color
+    );
 
-    if (t.left !== null) drawDividingLines(t.left, 'left');
-    if (t.right !== null) drawDividingLines(t.right, 'right');
+    var viewportLeft = viewport.slice();
+    var viewportRight = viewport.slice();
+    // console.log(t.dim);
+    if (t.dim % 2 === 0) {
+        viewportLeft[2] = t.split;
+        viewportRight[0] = t.split;
+    } else {
+        viewportLeft[3] = t.split;
+        viewportRight[1] = t.split;
+    }
+
+    if (t.left !== null) drawDividingLines(t.left, viewportLeft);
+    if (t.right !== null) drawDividingLines(t.right, viewportRight);
 }

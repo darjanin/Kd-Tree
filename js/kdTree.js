@@ -46,7 +46,7 @@ KDTree.prototype.constructTree = function(points, dim, k) {
 KDTree.prototype.computeSplitValue = function(points, dim) {
     var sum = 0;
     for (var i = 0; i < points.length; i++) {
-        if (dim % 2 == 1) {
+        if (dim % 2 == 0) {
             sum += points[i].x;
         } else {
             sum += points[i].y;
@@ -59,7 +59,7 @@ KDTree.prototype.splitPoints = function(points, split, dim, direction) {
     var resultPoints = [];
     if (direction === 'left') {
         for (var i = 0; i < points.length; i++) {
-            if (dim % 2 == 1) {
+            if (dim % 2 == 0) {
                 if (points[i].x < split) resultPoints.push(points[i]);
             } else {
                 if (points[i].y < split) resultPoints.push(points[i]);
@@ -70,7 +70,7 @@ KDTree.prototype.splitPoints = function(points, split, dim, direction) {
 
     if (direction === 'right') {
         for (var i = 0; i < points.length; i++) {
-            if (dim % 2 == 1) {
+            if (dim % 2 == 0) {
                 if (points[i].x >= split) resultPoints.push(points[i]);
             } else {
                 if (points[i].y >= split) resultPoints.push(points[i]);
@@ -91,7 +91,7 @@ KDTree.prototype.findNeighbours = function (point, k) {
 
     var node = this.root;
 
-    if (node.dim % 2 == 1) { // comparing x axis
+    if (node.dim % 2 == 0) { // comparing x axis
 
     } else { // comparing y axis
 
