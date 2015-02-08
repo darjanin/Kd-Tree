@@ -28,7 +28,7 @@ $(function() {
 
 function getKValue() {
     kValue = parseInt(kValueElement.value);
-        kValue = kValue < 0 ? 0 : kValue;
+    kValue = kValue < 0 ? 0 : kValue;
 }
 
 
@@ -118,17 +118,18 @@ function selectInRectangle() {
 
 function selectPoint(point) {
     var selectedPoint = null;
+
     points.forEach(function(centerPoint, index){
-        if (centerPoint.select(point, 5)) selectedPoint = centerPoint;
+        if (centerPoint.select(point, vincent.pointRadius)) selectedPoint = centerPoint;
     });
 
-    // tree.findNeighbours(point, k);
     if (selectedPoint !== null) {
-        console.log(selectedPoint.x + 'x' + selectedPoint.y);
+        // find k+1 nearest neighbours; it counts itself to neighbours. for that
+        // is there +1 to k
         var result = tree.nearestNeighbours(selectedPoint, kValue + 1);
 
         result.nodes.forEach(function(node, index) {
-            if (node.point.selected) node.point.neighbourRadius = distance(node.point, result.nodes[result.nodes.length-1].point);
+            if (node.point.selected) node.point.neighbourRadius = result.radius;
             node.point.neighbour = true;
         });
 
@@ -178,22 +179,22 @@ function deselectAllPoints() {
     });
 }
 
-function drawDividingLines(t, viewport) {
+function drawDividingLines(node, viewport) {
     var XMIN = 0, YMIN = 1, XMAX = 2, YMAX = 3;
 
-    if (t === null || t.point !== null) return;
+    if (node === null || node.point !== null) return;
 
     var viewportLocal = viewport.slice();
 
-    if (t.dim % 2 == 0) {
-        viewportLocal[XMIN] = t.split;
-        viewportLocal[XMAX] = t.split;
+    if (node.isAxisX()) {
+        viewportLocal[XMIN] = node.split;
+        viewportLocal[XMAX] = node.split;
     } else {
-        viewportLocal[YMIN] = t.split;
-        viewportLocal[YMAX] = t.split;
+        viewportLocal[YMIN] = node.split;
+        viewportLocal[YMAX] = node.split;
     }
 
-    var color = t.dim % 2 == 0 ? '#de5555' : '#55de55';
+    var color = node.isAxisX() ? '#de5555' : '#55de55';
     vincent.line(
         new Point(viewportLocal[XMIN], viewportLocal[YMIN]),
         new Point(viewportLocal[XMAX], viewportLocal[YMAX]),
@@ -203,14 +204,14 @@ function drawDividingLines(t, viewport) {
     var viewportLeft = viewport.slice();
     var viewportRight = viewport.slice();
 
-    if (t.dim % 2 === 0) {
-        viewportLeft[XMAX] = t.split;
-        viewportRight[XMIN] = t.split;
+    if (node.isAxisX()) {
+        viewportLeft[XMAX] = node.split;
+        viewportRight[XMIN] = node.split;
     } else {
-        viewportLeft[YMAX] = t.split;
-        viewportRight[YMIN] = t.split;
+        viewportLeft[YMAX] = node.split;
+        viewportRight[YMIN] = node.split;
     }
 
-    drawDividingLines(t.left, viewportLeft);
-    drawDividingLines(t.right, viewportRight);
+    drawDividingLines(node.left, viewportLeft);
+    drawDividingLines(node.right, viewportRight);
 }
