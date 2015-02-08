@@ -2,29 +2,35 @@ var canvas;
 var vincent;
 var points;
 var tree;
+var kValueElement;
+var kValue;
 var rectangle = {xMin: 0, yMin: 0, xMax: 0, yMax: 0};
 // on document ready load
 $(function() {
     canvas = document.getElementById('canvas');
+    kValueElement = document.getElementById('kValue');
 
     canvas.addEventListener('mousedown', mouseControl, false);
     canvas.addEventListener('mousemove', mouseControl, false);
     canvas.addEventListener('mouseup', mouseControl, false);
+
+    kValueElement.addEventListener('change', getKValue, false);
 
     vincent = new Vincent(canvas);
     vincent.init();
 
     points = [];
 
+    getKValue();
+
     tree = new KDTree();
 });
 
-var actions = function() {
-
-    this.mouseup = function() {
-
-    };
+function getKValue() {
+    kValue = parseInt(kValueElement.value);
+        kValue = kValue < 0 ? 0 : kValue;
 }
+
 
 function mouseControl(ev) {
     var x, y;
@@ -111,13 +117,23 @@ function selectInRectangle() {
 }
 
 function selectPoint(point) {
+    var selectedPoint = null;
     points.forEach(function(centerPoint, index){
-        centerPoint.select(point, 5);
+        if (centerPoint.select(point, 5)) selectedPoint = centerPoint;
     });
 
     // tree.findNeighbours(point, k);
+    if (selectedPoint !== null) {
+        console.log(selectedPoint.x + 'x' + selectedPoint.y);
+        var result = tree.nearestNeighbours(selectedPoint, kValue + 1);
 
-    redraw();
+        result.nodes.forEach(function(node, index) {
+            if (node.point.selected) node.point.neighbourRadius = distance(node.point, result.nodes[result.nodes.length-1].point);
+            if (!node.point.selected) node.point.neighbour = true;
+        });
+
+        redraw();
+    }
 
     resetRectangle();
 }
@@ -128,6 +144,10 @@ function redraw() {
 
     points.forEach(function(point, index){
         var color = point.selected ? '#ce0000' : '#333333';
+        var color = point.neighbour ? '#0000ce' : color;
+
+        if (point.selected) vincent.circle(point, point.neighbourRadius, '#cece00');
+
         vincent.point(point, color);
     });
 
@@ -151,7 +171,10 @@ function resetRectangle() {
 }
 
 function deselectAllPoints() {
-    points.forEach(function(point) { point.selected = false; });
+    points.forEach(function(point) {
+        point.selected = false;
+        point.neighbour = false;
+    });
 }
 
 function drawDividingLines(t, viewport) {

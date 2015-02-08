@@ -8,6 +8,8 @@ function KDTreeNode() {
     this.left = null; // Stores left subtree
     this.right = null; // Stores right subtree
     this.parent = null; // Store parent node
+
+    this.distance = 0;
 }
 
 function KDTree() {
@@ -104,9 +106,164 @@ KDTree.prototype.findNeighbours = function (point, k) {
 
     }
 
-
-
     return neigboursCount;
+}
+
+KDTree.prototype.nearestNeighbours = function(point, k) {
+    var result = { nodes: [], radius: 0 };
+    result = this.findNearPoints(this.root, point, k, result);
+    // console.log('FindNearPoint');
+    // console.log(result);
+    result.nodes.forEach(function(node) {
+        if (node.distance > result.radius) result.radius = node.distance;
+    });
+    result = this.findNearestPoints(this.root, point, k, result);
+    result.nodes = result.nodes.sort(function(a, b) {
+        if (a.distance > b.distance) {
+            return 1;
+        } else if (a.distance < b.distance) {
+            return -1;
+        }
+        return 0;
+    });
+    return result;
+}
+
+KDTree.prototype.findNearPoints = function(node, point, k, result) {
+
+    if (node.point !== null) {
+        node.distance = distance(point, node.point);
+        result.nodes.push(node);
+        result.radius = node.distance;
+        return result;
+    }
+
+    if (inLeftPart(point, node.dim, node.split)) {
+        result = this.findNearPoints(node.left, point, k, result);
+        if (result.nodes.length < k) {
+            result = this.findNearPoints(node.right, point, k, result);
+        }
+    } else {
+        result = this.findNearPoints(node.right, point, k, result);
+        if (result.nodes.length < k) {
+            result = this.findNearPoints(node.left, point, k, result);
+        }
+    }
+
+    return result;
+}
+
+function distance(point0, point1) {
+    var x = Math.pow(point0.x - point1.x, 2);
+    var y = Math.pow(point0.y - point1.y, 2);
+    return Math.round(Math.sqrt(x + y));
+}
+
+function inLeftPart(point, dim, split) {
+    if (dim % 2 == 0) {
+        return point.x < split ? true : false;
+    } else {
+        return point.y < split ? true : false;
+    }
+}
+
+KDTree.prototype.findNearestPoints = function(root, point, k, result) {
+    // console.log(root);
+    var kd, hyperplaneDistance;
+    // var result = result;
+    var currentNode = result.nodes[0];
+    // console.log(result.nodes[0]);
+    while (currentNode !== root) {
+        hyperplaneDistance = distanceFromPlane(point, currentNode.parent.dim, currentNode.parent.split);
+        console.log('Hyperplane distance: ' + hyperplaneDistance);
+        console.log('Current nearest radius' + result.radius);
+        if (hyperplaneDistance < result.radius) {
+            if (currentNode === currentNode.parent.left) {
+                result = this.searchSubtree(currentNode.parent.right, point, k, result);
+                // result = result;
+            } else {
+                result = this.searchSubtree(currentNode.parent.left, point, k, result);
+                // result = result;
+            }
+        }
+
+        currentNode = currentNode.parent;
+    }
+
+    return result;
+}
+
+function distanceFromPlane(point, dim, split) {
+    var planePoint = dim % 2 === 0 ? new Point(split, point.y) : new Point(point.x, split);
+    return distance(point, planePoint)
+}
+
+KDTree.prototype.searchSubtree = function(node, point, k, result) {
+    var nodes = [];
+    var currentNode, hyperplaneDistance;
+    if (node !== null) nodes.push(node);
+
+    while(nodes.length > 0) {
+        currentNode = nodes.pop();
+
+        if (currentNode.point !== null) {
+            // result.radius = distance(currentNode.point, point);
+            currentNode.distance = distance(currentNode.point, point);
+            if (currentNode.distance < result.radius) {
+                result.nodes = addNewAndRemove(result.nodes, currentNode, point, k);
+                result.radius = updateRadius(result.nodes);
+            }
+            continue;
+        }
+
+        hyperplaneDistance = distanceFromPlane(point, currentNode.dim, currentNode.split);
+        if (hyperplaneDistance > result.radius) {
+            if (inLeftPart(point, currentNode.dim, currentNode.split)) {
+                nodes.push(currentNode.left);
+            } else {
+                nodes.push(currentNode.right);
+            }
+        } else {
+            nodes.push(currentNode.left);
+            nodes.push(currentNode.right);
+        }
+    }
+
+    return result;
+}
+
+function updateRadius(nodes) {
+    var maxRadius = 0;
+    nodes.forEach(function(node) {
+        if (node.distance > maxRadius) maxRadius = node.distance;
+    });
+    return maxRadius;
+}
+
+function addNewAndRemove(nodes, currentNode, point, k) {
+    // var result = [];
+    var contains = false;
+    nodes.forEach(function(node) {
+        if (node.distance === currentNode.distance) contains = true;
+    });
+    if (!contains) {
+        nodes.push(currentNode);
+        // nodes.forEach(function(node) {
+            // if (node.distance < currentNode.distance) result.push(node);
+        // });
+        nodes.sort(function(a, b) {
+            if (a.distance > b.distance) {
+                return 1;
+            } else if (a.distance < b.distance) {
+                return -1;
+            }
+            return 0;
+        });
+
+        if (nodes.length > k) nodes.splice(-1,1)
+    }
+
+    return nodes;
 }
 
 

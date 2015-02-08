@@ -73,6 +73,6 @@ Vincent.prototype.circle = function(point, radius, color) {
 
     this.context.beginPath();
     this.context.arc(point.x, point.y, radius, 0, 2 * Math.PI, false);
-    this.context.strokeStyle() = color;
+    this.context.strokeStyle = color;
     this.context.stroke();
 }
