@@ -1,3 +1,9 @@
+// Implementation of the kdTree for 2D in JS
+// Functions
+// - Create 2DTree
+// - find k closest neighbours
+// - find all points in given range by rectangle
+
 
 function KDTreeNode() {
     this.point = null; // Stores instant of the Point class with position

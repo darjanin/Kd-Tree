@@ -1,3 +1,5 @@
+// Vincent Class contains drawing logic to canvas
+
 function Point(x, y) {
     this.x = x;
     this.y = y;

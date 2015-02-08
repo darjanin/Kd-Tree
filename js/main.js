@@ -8,41 +8,44 @@ var rectangle = {xMin: 0, yMin: 0, xMax: 0, yMax: 0};
 var splitValueType = 'median';
 // on document ready load
 $(function() {
-    canvas = document.getElementById('canvas');
-    kValueElement = document.getElementById('kValue');
-    clearCanvasElement = document.getElementById('clear');
+    // main function that is called when document is loaded
+    canvas = document.getElementById('canvas'); // canvas where would be draw element
+    kValueElement = document.getElementById('kValue'); // number of neighbours element
+    clearElement = document.getElementById('clear'); // clear button element
 
-    canvas.addEventListener('mousedown', mouseControl, false);
-    canvas.addEventListener('mousemove', mouseControl, false);
-    canvas.addEventListener('mouseup', mouseControl, false);
+    canvas.addEventListener('mousedown', mouseControl, false); // mouse event listener for mouse down
+    canvas.addEventListener('mousemove', mouseControl, false); // mouse event listener for mouse move
+    canvas.addEventListener('mouseup', mouseControl, false); // mouse event listener for mouse up
 
     kValueElement.addEventListener('change', getKValue, false);
 
-    clearCanvasElement.addEventListener('click', clear, false);
+    clearElement.addEventListener('click', clear, false);
 
     document.getElementById('median').addEventListener('click', function() {
         splitValueType = 'median';
         recalculateTree();
-    }, false);
+    }, false); // changing value of splitValueType and recalculate tree
 
     document.getElementById('average').addEventListener('click', function() {
         splitValueType = 'average';
         recalculateTree();
-    }, false);
+    }, false); // changing value of splitValueType and recalculate tree
 
     document.getElementById('pointRadius').addEventListener('change', function() {
          pointRadius = parseInt(this.value);
          pointRadius = pointRadius < 0 ? 0 : pointRadius;
          vincent.pointRadius = pointRadius;
          redraw();
-    });
+    }); // change size of points
 
+    // initialization of vincet for drawing
     vincent = new Vincent(canvas);
     vincent.init();
 
+    // array for added points that would be sent to KdTree
     points = [];
 
-    getKValue();
+    getKValue(); // set the default value for closest neighbours
 
     tree = new KDTree(splitValueType);
 });
@@ -53,6 +56,7 @@ function getKValue() {
 
 }
 
+// clear canvas and remove all added points; reset tree
 function clear() {
     points = [];
     tree = new KDTree();
@@ -100,6 +104,8 @@ function mouseControl(ev) {
     }
 }
 
+
+// debugging function
 function showPoints() {
     var result = [];
     points.forEach(function(point, index) {
@@ -108,6 +114,7 @@ function showPoints() {
     console.log(result.join(','));
 }
 
+// recalculate values and redraw canvas
 function recalculateTree() {
     tree.splitValueType = splitValueType;
     tree.init(points);
@@ -115,13 +122,10 @@ function recalculateTree() {
 }
 
 function addPoint(point) {
+    // add new point if the coordinates had changed
     if (points.length === 0 || point.x !== points[points.length-1].x || point.y !== points[points.length-1].y) {
-
         points.push(point);
-        // tree.init(points);
-        // redraw();
         recalculateTree();
-    } else {
     }
 
     resetRectangle();
@@ -178,9 +182,9 @@ function redraw() {
     vincent.clear();
 
     points.forEach(function(point, index){
+        // base on type of point set drawing color
         var color = point.neighbour ? '#0000ce' : '#333333';
         var color = point.selected ? '#ce0000' : color;
-
 
         if (point.selected && point.neighbour) vincent.circle(point, point.neighbourRadius, '#cece00');
 
@@ -195,8 +199,7 @@ function redraw() {
         )
     }
 
-    var viewport = [0, 0, canvas.width, canvas.height];
-    drawDividingLines(this.tree.root, viewport);
+    drawDividingLines(this.tree.root, [0, 0, canvas.width, canvas.height]);
 
     deselectAllPoints();
 
