@@ -129,7 +129,7 @@ function selectPoint(point) {
 
         result.nodes.forEach(function(node, index) {
             if (node.point.selected) node.point.neighbourRadius = distance(node.point, result.nodes[result.nodes.length-1].point);
-            if (!node.point.selected) node.point.neighbour = true;
+            node.point.neighbour = true;
         });
 
         redraw();
@@ -143,10 +143,11 @@ function redraw() {
     vincent.clear();
 
     points.forEach(function(point, index){
-        var color = point.selected ? '#ce0000' : '#333333';
-        var color = point.neighbour ? '#0000ce' : color;
+        var color = point.neighbour ? '#0000ce' : '#333333';
+        var color = point.selected ? '#ce0000' : color;
 
-        if (point.selected) vincent.circle(point, point.neighbourRadius, '#cece00');
+
+        if (point.selected && point.neighbour) vincent.circle(point, point.neighbourRadius, '#cece00');
 
         vincent.point(point, color);
     });
