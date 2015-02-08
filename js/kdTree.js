@@ -16,8 +16,9 @@ KDTreeNode.prototype.isAxisX = function() {
     return this.dim % 2 === 0;
 }
 
-function KDTree() {
+function KDTree(splitValueType) {
     this.root = null;
+    this.splitValueType = splitValueType;
 }
 
 KDTree.prototype.init = function(points){
@@ -34,8 +35,12 @@ KDTree.prototype.constructTree = function(points, dim, k) {
         node.point = points[0];
         return node;
     }
+    if (this.splitValueType === 'median') {
+        node.split = this.computeSplitValueMedian(points, dim);
+    } else if (this.splitValueType === 'average') {
+        node.split = this.computeSplitValueAverage(points, dim);
+    }
 
-    node.split = this.computeSplitValueMedian(points, dim);
 
     var pointsLeft = this.splitPoints(points, node.split, dim, 'left');
     var pointsRight = this.splitPoints(points, node.split, dim, 'right');
@@ -51,7 +56,7 @@ KDTree.prototype.constructTree = function(points, dim, k) {
     return node;
 }
 
-KDTree.prototype.computeSplitValue = function(points, dim) {
+KDTree.prototype.computeSplitValueAverage = function(points, dim) {
     var sum = 0;
     for (var i = 0; i < points.length; i++) {
         if (dim % 2 === 0) {

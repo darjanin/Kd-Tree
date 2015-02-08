@@ -16,28 +16,138 @@ table{border-collapse:collapse;border-spacing:0}
 hr{display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0}
 input,select{vertical-align:middle}
 
+* {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
 body {
     font-family: sans-serif;
 
     background-color: #333;
+    color: #d0d0d0;
+    font-size: 14px;
+    line-height: 16px;
+
+    min-width: 900px;
+    min-height: 500px;
 }
 
 .container {
 
 }
 
-.control-box {
-    width: 100px;
-    left: 10px;
-    top: 10px;
+.copy {
+    margin-top: 30px;
 }
 
+label,
+input,
+button {
+    display: inline-block;
+    height: 20px;
+}
+label {
+    color: #d0d0d0;
+    line-height: 20px;
+    font-size: 14px;
+
+}
+label + div {
+     margin-top: 10px;
+
+}
+
+input {
+    background-color: #cacaca;
+    border: none;
+    padding: 0 5px;
+    font-weight: bold;
+}
+button {
+
+}
+input:focus {
+    outline: none;
+    background-color: white;
+}
+
+input[type=number] {
+    width: 50px;
+
+}
+
+h1 {
+    height: 50px;
+    line-height: 50px;
+    color: white;
+    display: block;
+    float: left;
+    font-size: 30px;
+    margin-right: 20px;
+    margin-left: 0;
+}
+.controls {
+    /*float: left;*/
+}
+footer {
+    color: #d0d0d0;
+}
+.group {
+    display: block;
+    /*padding: 0 5px;*/
+    margin-bottom: 10px;
+}
+.group + .group {
+    /*border-left: 1px solid #666;*/
+}
+.canvas {
+    margin-left: 300px;
+}
 canvas {
     display: block;
     background-color: white;
     position: relative;
-    width: 640px;
-    height: 480px;
+    /*width: 640px;*/
+    /*height: 480px;*/
     margin: 50px auto 50px auto;
     box-shadow: 0 0 5px rgba(0,0,0,.5);
+}
+
+.control-box {
+    height: 100%;
+    width: 250px;
+    padding: 10px;
+    top: 0;
+    position: absolute;
+    background-color: #222;
+    -webkit-box-shadow: inset 0 -1px 1px rgba(255,255,255,.05), 0 1px 5px rgba(0,0,0,.5) ;
+            box-shadow: inset 0 -1px 1px rgba(255,255,255,.05), 0 1px 5px rgba(0,0,0,.5) ;
+}
+.control-box::before,
+.control-box::after {
+    display: table;
+    content: " ";
+}
+.control-box::after {
+    clear: both;
+}
+
+dt {
+    padding-left: 5px;
+    margin-bottom: 10px;
+}
+
+dd {
+    margin-bottom: 5px;
+}
+dt, dd {
+    /*margin: 10px 0;*/
+}
+
+h2 {
+    font-weight: normal;
+    font-size: 1.2em;
+    margin-bottom: 10px;
 }

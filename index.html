@@ -24,13 +24,50 @@
                 <dd><kbd>Right Click</kbd> <em>on the point</em></dd>
                 <dt>Some definition</dt>
             </dl> -->
+            <div class="controls">
+                <div class="group">
+                    <label for="kValue">Number of neighbours</label>
+                    <input type="number" name="kValue" id="kValue" value="2">
+                </div>
+                <div class="group">
+                    <button id="clear" class="description" title="">Clear</button>
+                </div>
+                <div class="group">
+                    <label title="">Type of split value</label>
+                    <div>
+                        <button id="median">Median value</button>
+                        <button id="average">Average value</button>
+                    </div>
+                </div>
+                <div class="group">
+                    <label for="pointRadius">Radius of point</label>
+                    <input type="number" name="pointRadius" id="pointRadius" value="3">
+                </div>
+            </div>
 
-            <input type="text" name="kValue" id="kValue" value="2">
+            <footer>
+                <h2>Description</h2>
+                <dl>
+                    <dd><kbd>Left Click</kbd></dd>
+                    <dt>Add point</dt>
+                    <dd><kbd>Middle Button Click</kbd> + <em>Drag &amp; Drop</em></dd>
+                    <dt>Draw rectangle around points that will be selected</dt>
+                    <dd><kbd>Right Click</kbd> <em>on the point</em></dd>
+                    <dt>Select neighbours <em>k</em> neighbours. <br><small>(<em>k</em> specified above)<small></dt>
+                    <dd>Click on the clear button</dd>
+                    <dt>Will erase whole canvas and delete points. Fresh start.</dt>
+                </dl>
+                <p class="copy">
+                    Created by Milan Darjanin <milan.darjanin@gmail.com>, 2015
+                </p>
+            </footer>
+
 
 
         </div>
-
-        <canvas id="canvas" width="640" height="480" oncontextmenu="return false;"></canvas>
+        <div class="canvas">
+            <canvas id="canvas" width="640" height="480" oncontextmenu="return false;"></canvas>
+        </div>
 
     </div>
     <script src="js/lib/jquery.min.js"></script>

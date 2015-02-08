@@ -2,19 +2,40 @@ var canvas;
 var vincent;
 var points;
 var tree;
-var kValueElement;
+var kValueElement, clearElement;
 var kValue;
 var rectangle = {xMin: 0, yMin: 0, xMax: 0, yMax: 0};
+var splitValueType = 'median';
 // on document ready load
 $(function() {
     canvas = document.getElementById('canvas');
     kValueElement = document.getElementById('kValue');
+    clearCanvasElement = document.getElementById('clear');
 
     canvas.addEventListener('mousedown', mouseControl, false);
     canvas.addEventListener('mousemove', mouseControl, false);
     canvas.addEventListener('mouseup', mouseControl, false);
 
     kValueElement.addEventListener('change', getKValue, false);
+
+    clearCanvasElement.addEventListener('click', clear, false);
+
+    document.getElementById('median').addEventListener('click', function() {
+        splitValueType = 'median';
+        recalculateTree();
+    }, false);
+
+    document.getElementById('average').addEventListener('click', function() {
+        splitValueType = 'average';
+        recalculateTree();
+    }, false);
+
+    document.getElementById('pointRadius').addEventListener('change', function() {
+         pointRadius = parseInt(this.value);
+         pointRadius = pointRadius < 0 ? 0 : pointRadius;
+         vincent.pointRadius = pointRadius;
+         redraw();
+    });
 
     vincent = new Vincent(canvas);
     vincent.init();
@@ -23,14 +44,20 @@ $(function() {
 
     getKValue();
 
-    tree = new KDTree();
+    tree = new KDTree(splitValueType);
 });
 
 function getKValue() {
     kValue = parseInt(kValueElement.value);
     kValue = kValue < 0 ? 0 : kValue;
+
 }
 
+function clear() {
+    points = [];
+    tree = new KDTree();
+    redraw();
+}
 
 function mouseControl(ev) {
     var x, y;
@@ -81,12 +108,19 @@ function showPoints() {
     console.log(result.join(','));
 }
 
+function recalculateTree() {
+    tree.splitValueType = splitValueType;
+    tree.init(points);
+    redraw();
+}
+
 function addPoint(point) {
     if (points.length === 0 || point.x !== points[points.length-1].x || point.y !== points[points.length-1].y) {
 
         points.push(point);
-        tree.init(points);
-        redraw();
+        // tree.init(points);
+        // redraw();
+        recalculateTree();
     } else {
     }
 
