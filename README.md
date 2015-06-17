@@ -7,7 +7,6 @@ Autor: Milan Darjanin
 Online verzia sa nachádza na týchto URL adresách
 
 - [github.milandarjanin.com/Kd-Tree](http://github.milandarjanin.com/Kd-Tree/ )
-- [kdtree.milandarjanin.com](http://kdtree.milandarjanin.com/)
 
 Zdrojový kód je aj v repozitári na [github.com/darjanin/Kd-Tree](https://github.com/darjanin/Kd-Tree).
 
